@@ -1,0 +1,6 @@
+{
+  "name": "claude-usage-status",
+  "owner": { "name": "Ali Ahmad" },
+  "description": "A Claude Code status line mod with the model, effort, context, cost, and usage limits.",
+  "plugins": [{ "name": "usage-status", "source": "./" }]
+}
