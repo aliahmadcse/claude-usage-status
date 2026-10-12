@@ -1,6 +1,6 @@
 {
   "name": "usage-status",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Status line with the model, context fill, session tokens and cost, and the 5-hour and weekly usage limits.",
   "author": {
     "name": "Ali Ahmad"

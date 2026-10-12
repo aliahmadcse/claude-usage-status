@@ -21,7 +21,7 @@ export interface LimitWindow {
 export interface StatusFigures {
   /** The model's display name or API id, or null when unknown. */
   model: string | null
-  /** The reasoning effort, as a level such as `medium` or a token budget. */
+  /** The reasoning effort, as a level such as `medium` or a token budget. Shown as `--` when unknown. */
   effort?: string | number
   /** Input tokens of the last response, or undefined before the first one. */
   contextTokens?: number
@@ -112,7 +112,8 @@ export function formatStatus(f: StatusFigures): string {
   const parts: string[] = []
 
   let model = f.model ? formatModel(f.model) : 'unknown'
-  if (f.effort !== undefined) model += ` · ${f.effort}`
+  // A dash keeps the slot visible when no effort is known (new session, model without effort).
+  model += ` · ${f.effort ?? '--'}`
   const used = f.contextTokens === undefined ? '--' : formatTokens(f.contextTokens)
   let ctx = `ctx ${used}/${formatTokens(f.contextWindow)}`
   if (f.contextPercent !== undefined) ctx += ` (${Math.round(f.contextPercent)}%)`

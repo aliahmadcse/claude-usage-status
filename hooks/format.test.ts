@@ -76,7 +76,7 @@ describe('formatStatus', () => {
       ],
     })
     expect(line).toBe(
-      '[Opus 5.5] ctx 45.2k/200.0k (23%) | in 1.2M out 34.5k | $1.23 | 5h 12% (3h 10m) | week 34% (2d 4h)',
+      '[Opus 5.5 · --] ctx 45.2k/200.0k (23%) | in 1.2M out 34.5k | $1.23 | 5h 12% (3h 10m) | week 34% (2d 4h)',
     )
   })
 
@@ -88,7 +88,7 @@ describe('formatStatus', () => {
       costUsd: undefined,
       limits: [],
     })
-    expect(line).toBe('[Opus 5.5] ctx --/200.0k | in 1.2M out 34.5k')
+    expect(line).toBe('[Opus 5.5 · --] ctx --/200.0k | in 1.2M out 34.5k')
   })
 
   test('shows the effort next to the model', async () => {
@@ -96,6 +96,10 @@ describe('formatStatus', () => {
     expect(line.startsWith('[Opus 5.5 · medium] ctx')).toBe(true)
   })
 
+  test('shows a dash when the effort is unknown', async () => {
+    const line = formatStatus({ ...base, limits: [] })
+    expect(line).toContain('[Opus 5.5 · --]')
+  })
   test('shows a numeric effort as a number', async () => {
     const line = formatStatus({ ...base, effort: 32000, limits: [] })
     expect(line.startsWith('[Opus 5.5 · 32000] ctx')).toBe(true)
