@@ -17,7 +17,8 @@ const lastEffort = atom({ plugin: 'usage-status', key: 'effort' } as const, null
  */
 async function refresh($: EngineInterface): Promise<void> {
   const [usage, sum, turnModel, turnEffort, now] = await Promise.all([
-    $.session.usage(),
+    // The summary breakdown carries the compaction window (`rawMaxTokens`).
+    $.session.usage({ breakdown: 'summary' }),
     read($, totals),
     read($, lastModel),
     read($, lastEffort),
@@ -27,13 +28,21 @@ async function refresh($: EngineInterface): Promise<void> {
   // Before the first request, fall back to the effort in settings.
   const effort = turnEffort ?? effortFromSettings(await $.settings.read(), model)
 
+  // `window` is the model's limit (1M). The user's `autoCompactWindow` setting
+  // (400K) is smaller, and `rawMaxTokens` reports it, so show that one.
+  const { tokens, window, percent } = usage.context
+  const compactWindow = usage.context.breakdown?.rawMaxTokens
+  const contextWindow = compactWindow && compactWindow < window ? compactWindow : window
+  const contextPercent =
+    tokens !== undefined && contextWindow !== window ? (tokens / contextWindow) * 100 : percent
+
   $.ui.status(
     formatStatus({
       model,
       effort,
-      contextTokens: usage.context.tokens,
-      contextWindow: usage.context.window,
-      contextPercent: usage.context.percent,
+      contextTokens: tokens,
+      contextWindow,
+      contextPercent,
       tokensIn: sum.tokensIn,
       tokensOut: sum.tokensOut,
       costUsd: usage.cost?.usd,
